@@ -74,7 +74,7 @@ person["name"]
 ##Some work with Data Frames
 data1 = data.frame(State="Texas",Temperature="56.4")
 data2 = read.csv("3-7 data.csv")
-data = rbind(data1,data2)
+data = rbind(data2,data1)
 data[7,"Temperature"]
 
 data[data[,"State"]=="Colorado","Temperature"] = 47
@@ -82,3 +82,12 @@ data [data[,2]=="Colorado","Temperature"] = 54
 
 data[data[,"State"]=="Colorado",]
 temp = data[,"Temperature"]
+
+temp = data[,"Temperature"]
+  temp_celcius = (temp - 32)/1.8
+data = cbind(data,Temperature_C = temp_celcius)
+
+colnames(data)
+colnames(data)[2] = "Temperature_F"
+
+
