@@ -1,0 +1,135 @@
+---
+title: Galton example
+author: Jeff Leek
+output:
+  rmarkdown::html_document:
+    toc: true
+  vignette: >  
+    %\VignetteIndexEntry{Galton example}
+    %\VignetteEngine{knitr::rmarkdown}
+    \usepackage[utf8]{inputenc}
+---
+
+```{r front, child="./../front.Rmd", echo=FALSE}
+```
+
+
+## Dependencies
+
+This document depends on the following packages:
+
+```{r load_hidden, echo=FALSE, results="hide", warning=FALSE}
+suppressPackageStartupMessages({
+  library(devtools)
+  library(Biobase)
+  library(UsingR)
+})
+```
+
+```{r load}
+  library(devtools)
+  library(Biobase)
+  library(UsingR)
+```
+
+
+To install these packages you can use the code (or if you are compiling the document, remove the `eval=FALSE` from the chunk.)
+
+```{r install_packages, eval=FALSE}
+install.packages(c("devtools","UsingR"))
+source("http://www.bioconductor.org/biocLite.R")
+biocLite(c("Biobase"))
+```
+
+
+### Load Galton Data
+
+```{r galton,fig.height=4,fig.width=8}
+data(galton)
+par(mfrow=c(1,2))
+hist(galton$child,col="blue",breaks=100)
+hist(galton$parent,col="blue",breaks=100)
+```
+
+### The distribution of child heights
+
+```{r, dependson="galton",fig.height=4,fig.width=4}
+hist(galton$child,col="blue",breaks=100)
+```
+
+### Only know the child  - average height
+
+```{r, dependson="galton",fig.height=4,fig.width=4}
+hist(galton$child,col="blue",breaks=100)
+meanChild <- mean(galton$child)
+lines(rep(meanChild,100),seq(0,150,length=100),col="red",lwd=5)
+```
+
+
+### What if we plot child versus average parent
+
+```{r, dependson="galton",fig.height=4,fig.width=4}
+plot(galton$parent,galton$child,pch=19,col="blue")
+```
+
+### Average parent = 65 inches tall
+
+```{r, dependson="galton",fig.height=4,fig.width=4}
+plot(galton$parent,galton$child,pch=19,col="blue")
+near65 <- galton[abs(galton$parent - 65)<1, ]
+points(near65$parent,near65$child,pch=19,col="red")
+lines(seq(64,66,length=100),rep(mean(near65$child),100),col="red",lwd=4)
+```
+
+### Average parent = 71 inches tall
+
+```{r, dependson="galton",fig.height=4,fig.width=4}
+plot(galton$parent,galton$child,pch=19,col="blue")
+near71 <- galton[abs(galton$parent - 71)<1, ]
+points(near71$parent,near71$child,pch=19,col="red")
+lines(seq(70,72,length=100),rep(mean(near71$child),100),col="red",lwd=4)
+```
+
+
+### Fitting a line
+
+
+
+```{r, dependson="lm1",fig.height=4,fig.width=4}
+plot(galton$parent,galton$child,pch=19,col="blue")
+lm1 <- lm(galton$child ~ galton$parent)
+lines(galton$parent,lm1$fitted,col="red",lwd=3)
+```
+
+
+### Not all points are on the line
+
+```{r, dependson="lm1",fig.height=4,fig.width=4}
+plot(galton$parent,galton$child,pch=19,col="blue")
+lines(galton$parent,lm1$fitted,col="red",lwd=3)
+```
+
+### Plot what is leftover
+
+```{r, dependson="lm1",fig.height=4,fig.width=8}
+par(mfrow=c(1,2))
+plot(galton$parent,galton$child,pch=19,col="blue")
+lines(galton$parent,lm1$fitted,col="red",lwd=3)
+plot(galton$parent,lm1$residuals,col="blue",pch=19)
+abline(c(0,0),col="red",lwd=3)
+```
+
+
+
+## Session information
+
+Here is the session information 
+
+```{r session_info}
+devtools::session_info()
+```
+
+It is also useful to compile the time the document was processed. This document was processed on: `r Sys.Date()`.
+
+
+
