@@ -8,3 +8,4 @@ knit_hooks$set(setPch = function(before,options,envir){
 opts_chunk$set(setPch = TRUE)
 
 knitr::opts_chunk$set(fig.width = 5,fig.height = 5, size = "footnotesize", warning = FALSE, message = FALSE)
+source()
