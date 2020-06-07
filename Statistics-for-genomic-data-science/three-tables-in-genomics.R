@@ -11,3 +11,8 @@ exp_data = exprs(bm)
 head(exp_data)
 #This gives the phenotype data of the ESET
 pheno_data = pData(bm)
+head(pheno_data)
+
+#This gives the feature data 
+feature_data = featureData(bm)
+dim(feature_data)
