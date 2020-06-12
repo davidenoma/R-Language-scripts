@@ -63,5 +63,18 @@ legend(5,1000, c('With outlier','without outlier'), col = c(3,7),lwd = 4)
 
 
 
-##--
-par(mfrom = c(1,2))
+##--Showing the effect of the outliers on the residuals
+par(mfrow = c(1,2))
+hist(lm7$residuals,col=3)
+hist(lm8$residuals, col = 4)
+gene1 = log2(edata[1,] + 1 )
+lm9 = lm(gene1 ~ index)
+#This checks the effect of normalization on the districution 
+hist(lm9$residuals, col =4 )
+
+#careful when including covariates. 
+
+colorramp = colorRampPalette(1:4)(17)
+lm10 = lm(edata[2,] ~ pdata$age)
+plot(lm10$residuals, col = colorramp[as.numeric(pdata$tissue.type)])
+
