@@ -1,0 +1,18 @@
+---
+title: "test"
+output: pdf_document
+---
+
+```{r setup, eval=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r }
+x = rnorm(10)
+plot(x,pch=19,col="dodgerblue")
+```
+
+```{r }
+y = rbinom(20,size=1,prob=0.5)
+table(y)
+```

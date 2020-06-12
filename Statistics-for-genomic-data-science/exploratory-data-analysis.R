@@ -9,7 +9,8 @@ opts_chunk$set(setPch = TRUE)
 
 knitr::opts_chunk$set(fig.width = 5,fig.height = 5, size = "footnotesize", warning = FALSE, message = FALSE)
 
-#look through the Markdown file for required libraries. 
+#look through the Markdown file for required libraries for Exploratory Data analysis
+
 con=url("http://bowtie-bio.sourceforge.net/recount/ExpressionSets/bodymap_eset.RData")
 load(file=con)
 ls()
