@@ -1,6 +1,6 @@
 tropical = c('darkorange','dodgerblue','hotpink','limegreen','yellow')
 palette(tropical)
-par(pch= 10)
+par(pch= 19)
 library(devtools)
 library(Biobase)
 library(sva)
@@ -52,5 +52,38 @@ points(sva1$sv[,2] ~ jitter(as.numeric(pheno$batch)),col = as.numeric(pheno$batc
 
 #In order words we defined our covariates that we now need to add 
 #in our model. 
+modsv = cbind(mod,sva1$sv)
+head(modsv)
+fitsv = lm.fit(modsv, t(edata))
 
+par(mfrom = c(1,2))
+#Now we compare SVA vs Combat 
+plot(fitsv$coefficients[2,] , combat_fit$coefficients[2,],col =2 ,
+     xlab = "SVA", ylab = "Combat" , xlim = c(-5,5), ylim = c(-5,5))
+
+abline(c(0,1),col=1,lwd = 3 )
+#Now the sva with the linear model adjusted 
+plot(fitsv$coefficients[2,] ,fit$coefficients[2,],col =2 ,
+     xlab = "SVA", ylab = "Combat" , xlim = c(-5,5), ylim = c(-5,5))
+abline(c(0,1),col=1, lwd= 3)
+
+
+
+#Data from the SNPStats Package
+data(for.exercise)
+controls = rownames(subject.support)[subject.support$cc==0]
+use <- seq(1,ncol(snps.10),10)
+ctl.10 = snps.10[controls,use]
+
+#xxt does the prelim for the Principal component Analysis
+xxmat = xxt(ctl.10,correct.for.missing = FALSE)
+#The evv are the eigen vectors
+evv <- eigen(xxmat, symmetric = TRUE)
+pcs <- evv$vectors[,1:5]
+#The pcs are the first five principal components 
+dim(pcs)
+pop <- subject.support[controls,"stratum"]
+pop
+plot(pcs[,1],pcs[,2], col=as.numeric(pop), xlab ="PC1", ylab ="PC2")
+legend(0,0.15,legend = levels(pop),pch=19,col=1:2)
 
