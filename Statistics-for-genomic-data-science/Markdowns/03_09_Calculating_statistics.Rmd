@@ -15,7 +15,6 @@ output:
 
 
 ## Dependencies
-
 This document depends on the following packages:
 
 ```{r load_hidden, echo=FALSE, results="hide", warning=FALSE}
