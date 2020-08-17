@@ -90,6 +90,7 @@ edata=as.data.frame(exprs(mp))
 edata = edata[rowMeans(edata) > 100,]
 fdata = fData(mp)
 #USing the Limma to fit statistics 
+
 de = DESeqDataSetFromMatrix(edata, pdata, ~study)
 glm_all_nb = DESeq(de)
 result_nb = results(glm_all_nb)
@@ -111,6 +112,8 @@ top$P.Value
 fp_bh = p.adjust(result_nb$pvalue,method="BH")
 hist(fp_bh,col=3)
 quantile(fp_bh)
+
+#Adjusted pvalues from limma
 top_bh = p.adjust(top$P.Value, method = "BH")
 
 
