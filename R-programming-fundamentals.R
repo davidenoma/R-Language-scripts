@@ -51,6 +51,11 @@ typeof(x$bar)
 typeof(x$foo)
 x <- matrix(1:6, 2, 3)
 x
+
+
+
+
+
 x[1,2]
 x[1]
 x[1,]
