@@ -41,7 +41,8 @@ apply(x, 2, mean)
 apply(x,1,quantile,probs = c(0.25,0.75))
 
 a <- array(rnorm(2*2*10),c(2,2,10))
-typeof(a)apply(a,c(1,2),mean)
+typeof(a)
+apply(a,c(1,2),mean)
 rowMeans(a,dims = 2)
 #mapply
 
@@ -50,7 +51,8 @@ x
 f <- gl()
 f <- gl(3,10)
 f
-tapply(x, f, mean)tapply(x, f, mean,simplify = FALSE)
+tapply(x, f, mean)
+tapply(x, f, mean,simplify = FALSE)
 tapply(x, f, range)
 str(split)
 
@@ -88,7 +90,23 @@ read.csv("ultimate")
 options(error=recover)
 read.csv("ultimate")
 
+library(datasets)
+data("iris")
+split(iris, iris$Species)
+datas <- split(iris, iris$Species)
+datas$setosa
+mean(datas$setosa$Sepal.Length)
+mean(datas$virginica$Sepal.Length)
 
-
+apply(iris[,1:4],2,mean)
+data("mtcars")
+split(iris, iris$Species)
+datas <- split(iris, iris$Species)
+datas$setosa
+mean(datas$setosa$Sepal.Length)
+mean(datas$virginica$Sepal.Length)
+colMeans(iris)
+options(error="")
+options(error=Null)
 
 

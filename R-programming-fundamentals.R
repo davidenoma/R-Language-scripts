@@ -165,6 +165,29 @@ p$zone
 p$min
 p$hour
 
+#Simulation and Profiling 
+g <- gl(40,10)
+g
+str(f)
+summary(f)
+g
+f
+str(g)
+summary(g)
+library(datasets)
+str(airquality)
+summary(airquality)
+m <- matrix(rnorm(100),10,10)
+str(m)
+summary(m)
+m[,1]
+s <- split(airquality,airquality$Month)
+s
+s <- split(airquality,airquality$Month)
+str(s)
+
+
+
 
 
 
