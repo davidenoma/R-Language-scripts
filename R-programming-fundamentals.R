@@ -168,10 +168,13 @@ p$hour
 #Simulation and Profiling 
 g <- gl(40,10)
 g
+
+#str function 
 str(f)
 summary(f)
 g
 f
+
 str(g)
 summary(g)
 library(datasets)
@@ -186,9 +189,96 @@ s
 s <- split(airquality,airquality$Month)
 str(s)
 
+#simulation 
+#probability distribution functions 
+#dnorm, pnorm, qnorm, rnorm
+#default is mean 0 and sd 1 
+x <- rnorm(10)
+x <- rnorm(10, 20, 1)
+x
+#The seed is very important
+set.seed(1)
+rnorm(5)
+rnorm(5)
+set.seed(1)
+rnorm(5)
+plot(x)
+hist(x)
+rnorm(100)
+hist(x)
+x
+x <- rnorm(100)
+hist(x)
+#Poisson distribution
+rpois(10)
+rpois(10,1)
+rpois(10,20)
+##Cummulative distribution
+ppois(10,1)
+ppois(4,2)
+
+#Probability that x <= 4
+
+set.seed(20)
+x <- rnorm(100)
+e <- rnorm(100,0,2)
+y <- 0.5 + 2 * x + e
+y
+summary(y)
+
+plot(x,y)
+
+#if x is a binary random variable 
+set.seed(10)
+x <- rbinom(100,1,0.5)
+x
+e <- rnorm(100,0,2)
+y <- 0.5 + 2 * x + e 
+summary(y)
+plot(x,y)
+
+#Generalized linear model with a poisson distribution 
+
+set.seed(1)
+x <- rnorm(100)
+log.mu <- 0.5 + 0.3 * x 
+y <- rpois(100,exp(log.mu))
+summary(y)
+plot(x,y)
+set.seed(1)
+sample(1:10,4)
+sample(letters,5)
+sample(1:10)
+sample(1:10,replace = T)
+
+#Profiling R code 
+system.time()
+system.time(mean(rnorm(999999999999)))
+
+#Elapsed time > user time 
+system.time(readLines('https://goal.com'))
 
 
 
+#Elapsed time < user time 
+hil <- function (n){
+  i<- 1:n
+  1 /outer(i - 1, i , "+")
+}
+x <- hil(1000)
+system.time(svd(x))
 
+#Longer expressions
+system.time({
+  n <- 1000 
+  r <- numeric(n)
+  for (i in 1:n){
+    x <- rnorm(n)
+    r[i] <- mean(x)
+  }
+  
+})
+Rprof()
+summaryRprof()
 
-
+sample.interval = 1000
