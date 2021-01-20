@@ -50,7 +50,7 @@ best <- function(state, outcome) {
   
 }
 worst <- function(state, outcome, st = "a") {
-  if (!state %in% unique(rates$State))
+  if (!state %in% unique(outcomes$State))
     return("Invalid State")
   if (!outcome %in% c("heart attack", "heart failure", "pneumonia"))
     return("Invalid Outcome")
@@ -66,8 +66,33 @@ rankhospital <- function(state, outcome, num = "best") {
   outcomes <- read.csv("C:/Users/kora/Downloads/Documents/outcome-of-care-measures.csv",
                        colClasses = "character" )
   ## Check that state and outcome are valid -> This check is achieved in the best and worst functions above. 
-  
+  if (num == "best")
+    return(best(state,outcome))
+  if (num == "worst")
+    return(worst(state,outcome))       
+  else {
+    order_selected <- hosp_sort(state,outcome) 
   ## Return hospital name in that state with the given rank
   ## 30-day death rate
+  return(order_selected[num,1])
+  }
+
+}
+
+rankall <- function(outcome, num = "best") {
+  ## Read outcome data
+  ## Check that state and outcome are valid
+  ## For each state, find the hospital of the given rank
+  ## Return a data frame with the hospital names and the
+  ## (abbreviated) state name
+  
+  
+  results <- unlist(lapply(sort(unique(outcomes$State)), rankhospital, outcome, num),use.names=FALSE)
+  
+  hosp <- results[c(TRUE,FALSE)]
+  state <- results[c(FALSE,TRUE)]
+  all <- data.frame(hosp,state)
+  names(all) <- c("Hospital.Name", "state")
+  all
 }
 
