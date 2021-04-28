@@ -18,20 +18,9 @@ hausa_expt <-hausa_expt[4:13,1:4]
 igbo_expt <-igbo_expt[4:13,1:4]
 yoruba_expt <-yoruba_expt[4:13,1:4]
 
-# 
-# yoruba_control[4:13,]
-# igbo_control[4:13,]
-# hausa_control[4:13,]
-
-cbind(hausa_expt[4:13,],igbo_expt[4:13,],yoruba_expt[4:13,])
-
-
 hau_ctrl<-hausa_control[1:10,1:4]
-hau_ctrl
 igbo_ctrl <- igbo_control[1:10,1:4]
-igbo_ctrl
 yoruba_ctrl <- yoruba_control[1:10,1:4]
-yoruba_ctrl
 
 #Rename column names
 colnames(yoruba_expt) <- c("rs2023239", "rs806378",  "rs806379",  "rs806381" )
@@ -41,20 +30,14 @@ colnames(yoruba_ctrl) <- c("rs2023239", "rs806378",  "rs806379",  "rs806381" )
 colnames(igbo_ctrl) <- c("rs2023239", "rs806378",  "rs806379",  "rs806381" )
 colnames(hau_ctrl) <- c("rs2023239", "rs806378",  "rs806379",  "rs806381" )
 
-
-na.omit(rbind(igbo_control,igbo_expt))
-# rbind(igbo_control,igbo_expt))[,26]
-# rbind(igbo_control,igbo_expt)[,26]
-# rbind(igbo_control,igbo_expt)[26,]
-# rbind(igbo_control,igbo_expt)[26,1]
-typeof(rbind(igbo_ctrl,igbo_expt)[26,1])
-
 #Combining the controls and experimental groups
-rbind(yoruba_ctrl,yoruba_expt)
-rbind(hau_ctrl,hausa_expt)
-rbind(igbo_ctrl, igbo_expt )
+yor_entire<-rbind(yoruba_ctrl,yoruba_expt)
+hau_entire<-rbind(hau_ctrl,hausa_expt)
+rbind(igbo_ctrl, igbo_expt)
 
-
+#Combining all the snps independent of ethnicity 
+all_snps<- rbind(rbind(yoruba_ctrl,yoruba_expt),rbind(hau_ctrl,hausa_expt),rbind(igbo_ctrl, igbo_expt))
+nrow(all_snps)
 
 
 
