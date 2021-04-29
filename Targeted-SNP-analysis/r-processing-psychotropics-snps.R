@@ -33,11 +33,15 @@ colnames(hau_ctrl) <- c("rs2023239", "rs806378",  "rs806379",  "rs806381" )
 #Combining the controls and experimental groups
 yor_entire<-rbind(yoruba_ctrl,yoruba_expt)
 hau_entire<-rbind(hau_ctrl,hausa_expt)
-rbind(igbo_ctrl, igbo_expt)
+igb_entire<-rbind(igbo_ctrl, igbo_expt)
 
 #Combining all the snps independent of ethnicity 
 all_snps<- rbind(rbind(yoruba_ctrl,yoruba_expt),rbind(hau_ctrl,hausa_expt),rbind(igbo_ctrl, igbo_expt))
+rbind(yor_entire,hau_entire,igb_entire)
+typeof(all_snps)
+all_snps.
 nrow(all_snps)
+
 
 
 
