@@ -104,6 +104,7 @@ histogram(~as.factor(all_snps$rs806381),xlab ="rs806381")
 qplot(all_snps$rs806381,xlab ="rs806381",ylab = 'count')
 
 #Visualize snp frequency cases vs controls
+#rs2023239
 qplot(hau_ctrl$rs2023239,xlab = "Hausa Control for rs2023239")
 summary(as.factor(hau_ctrl$rs806378))
 qplot(hausa_expt$rs2023239,xlab = "Hausa Experimental for rs2023239")
@@ -111,7 +112,17 @@ summary(as.factor(hausa_expt$rs806378))
 qplot(igbo_ctrl$rs2023239,xlab = "Igbo Control for rs2023239")
 qplot(igbo_expt$rs2023239,xlab = "Igbo Experimental for rs2023239")
 
-qplot(yor)
+qplot(yoruba_ctrl$rs2023239,xlab = "Yoruba Control for rs2023239")
+qplot(yoruba_expt$rs2023239,xlab = "Yoruba Experimental for rs2023239")
+
+#rs806378
+qplot(hau_ctrl$rs806378,xlab = "Hausa Control for rs806378")
+qplot(hausa_expt$rs806378,xlab = "Hausa Experimental for rs806378")
+qplot(igbo_ctrl$rs806378,xlab = "Igbo Control for rs806378")
+qplot(igbo_expt$rs806378,xlab = "Igbo Experimental for rs806378")
+qplot(yoruba_ctrl$rs806378,xlab = "Yoruba Control for rs806378")
+qplot(yoruba_expt$rs806378,xlab = "Yoruba Experimental for rs806378")
+
 
 
 
