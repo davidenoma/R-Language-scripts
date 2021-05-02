@@ -39,10 +39,31 @@ igb_entire<-rbind(igbo_ctrl, igbo_expt)
 all_snps<- rbind(rbind(yoruba_ctrl,yoruba_expt),rbind(hau_ctrl,hausa_expt),rbind(igbo_ctrl, igbo_expt))
 rbind(yor_entire,hau_entire,igb_entire)
 typeof(all_snps)
-all_snps.
+all_snps
+
 nrow(all_snps)
+# barplot(as.matrix(all_snps),
+#         legend.text = row.names(all_snps),
+#         args.legend = list(x = "right"),
+#         col = c("blue","green","red"))
+plot(all_snps,type="h")
+table(all_snps)
+unique(all_snps)
 
+#installing packages to visualize tables. 
+install.packages("data.table")
+install.packages("dplyr")
+install.packages("formattable")
+install.packages("tidyr")
+install.packages('xfun')
+#Loading packages to visualize the tables
+library(data.table)
+library(dplyr)
+library(formattable)
+library(tidyr)
 
+#View all the snps. 
+formattable(all_snps)
+save(all_snps)
 
-
-
+all_snps
