@@ -64,6 +64,57 @@ library(tidyr)
 
 #View all the snps. 
 formattable(all_snps)
+data.table(all_snps)
+
+install.packages('htmltools')
+install.packages('webshot')
+library(htmltools)
+library(webshot)
+webshot::install_phantomjs()
+#Save the visualiztions of the SNPS
+export_formattable <- function(f, file, width = "100%", height = NULL, 
+                               background = "white", delay = 0.2)
+{
+  w <- as.htmlwidget(f, width = width, height = height)
+  path <- html_print(w, background = background, viewer = NULL)
+  url <- paste0("file:///", gsub("\\\\", "/", normalizePath(path)))
+  webshot(url,
+          file = file,
+          selector = ".formattable_widget",
+          delay = delay)
+}
+
+export_formattable(formattable(all_snps), "mysnps.png")
+
 save(all_snps)
 
 all_snps
+
+#VIsualize frequency of all snps in cases and controls
+require(c('ggplot','lattice'))
+histogram(~as.factor(all_snps$rs2023239),xlab ="rs2023239")
+qplot(all_snps$rs2023239,xlab ="rs2023239",ylab = 'count')
+histogram(~as.factor(all_snps$rs806378),xlab ="rs806378")
+qplot(all_snps$rs806378,xlab ="rs806378",ylab = 'count')
+
+histogram(~as.factor(all_snps$rs806379),xlab ="rs806379")
+qplot(all_snps$rs806379,xlab ="rs806379",ylab = 'count')
+
+histogram(~as.factor(all_snps$rs806381),xlab ="rs806381")
+qplot(all_snps$rs806381,xlab ="rs806381",ylab = 'count')
+
+#Visualize snp frequency cases vs controls
+qplot(hau_ctrl$rs2023239,xlab = "Hausa Control for rs2023239")
+summary(as.factor(hau_ctrl$rs806378))
+qplot(hausa_expt$rs2023239,xlab = "Hausa Experimental for rs2023239")
+summary(as.factor(hausa_expt$rs806378))
+qplot(igbo_ctrl$rs2023239,xlab = "Igbo Control for rs2023239")
+qplot(igbo_expt$rs2023239,xlab = "Igbo Experimental for rs2023239")
+
+qplot(yor)
+
+
+
+
+
+
