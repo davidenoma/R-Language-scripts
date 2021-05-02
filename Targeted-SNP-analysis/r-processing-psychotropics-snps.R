@@ -133,8 +133,21 @@ qplot(igbo_expt$rs806379,xlab = "Igbo Experimental for rs806379")
 
 #rs806381
 qplot(igbo_ctrl$rs806381,xlab = "Igbo Control for rs806381")
+qplot(igbo_expt$rs806381,xlab = "Igbo Experimental for rs806381")
+qplot(yoruba_ctrl$rs806381,xlab = "Yoruba Control for rs806381")
+qplot(yoruba_expt$rs806381,xlab = "Yoruba Experimental for rs806381")
+qplot(hau_ctrl$rs806381,xlab = "Hausa Control for rs806381")
+qplot(hausa_expt$rs806381,xlab = "Hausa Experimental for rs806381")
 
 
+summary(as.factor(hau_ctrl$rs806378))
+summary(as.factor(hau_ctrl$rs2023239))
+summary(as.factor(hau_ctrl$rs806379))
+summary(as.factor(hau_ctrl$rs806381))
+
+summary(as.factor(hau_entire$rs806378))
+summary(as.factor(igb_entire$rs806378))
+summary(as.factor(yor_entire$rs806378))
 
 
 
