@@ -9,10 +9,12 @@ BiocManager::install("affy")
 BiocManager::install("limma")
 BiocManager::install("hgu133plus2.db")
 BiocManager::install("Homo.sapiens")
+BiocManager::install("pheatmap")
 
 #install package from CRAN
 install.packages("hexbin")
 install.packages("RColorBrewer")
+install.packages("ggrepel")
 
 library(GEOquery)
 my.gse<- "GSE27447"
@@ -37,13 +39,31 @@ colnames(pData(my.geo.gse))
 pData(my.geo.gse)[1]
 pData(my.geo.gse)$data_processing[1]
 exprs(my.geo.gse)
+head(exprs(my.geo.gse))
 summary(exprs(my.geo.gse))
 
+
+#Some exploratory data analysis 
+library(dplyr)
+sampleInfo <- pData(my.geo.gse)
+sampleInfo <- select(sampleInfo, source_name_ch1,"disease state:ch1")
+sampleInfo <- rename(sampleInfo,sample = source_name_ch1, "state"="disease state:ch1")
+library(pheatmap)
+corMatrix <- cor(exprs(my.geo.gse),use="c")
+pheatmap(corMatrix)  
+rownames(sampleInfo)
+# rownames(sampleInfo) <- colnames(corMatrix)
+pheatmap(corMatrix,annotation_col=sampleInfo)  
+
+
 #The function getGEOSuppFiles() downloads the raw data files to your computer. 
-if(!file.exists(paste0("./geo_downloads/",my.gse)))
+if(!file.exists(paste0("./geo_downloads/",my.gse))){
   getGEOSuppFiles(my.gse, makeDirectory=T, baseDir="geo_downloads")
+}
+  
 list.files("geo_downloads")
 list.files(paste0("geo_downloads/",my.gse))
+
 file.list <- read.delim(paste0("geo_downloads/",my.gse,"/filelist.txt"), as.is=T)
 file.list
 ##function creates a directory and downloads the "tarball" that contains
@@ -55,6 +75,9 @@ list.files(paste0("geo_downloads/",my.gse,"/CEL"))
 my.cels <- list.files(paste0("geo_downloads/",my.gse,"/CEL"), pattern=".CEL")
 my.cels <- sort(my.cels)
 my.cels
+
+#PROCESSING THE MICROARRAY DATA
+
 ##make data frame of phenoData
 my.pdata <- as.data.frame(pData(my.geo.gse), stringsAsFactors=F)
 head(my.pdata)  
@@ -90,8 +113,9 @@ library(affy)
 cel.path <- paste0("geo_downloads/",my.gse,"/CEL")
 my.affy <- ReadAffy(celfile.path=cel.path, phenoData=paste(cel.path, paste0(my.gse,"_SelectPhenoData.txt"), sep="/"))
 show(my.affy)
+head(exprs(my.affy))
 
-
+#NOrmalization of the expression object
 my.rma <- rma(my.affy)
 head(exprs(my.affy))
 colnames(my.affy)
@@ -104,17 +128,18 @@ plotDensity(exprs(my.affy))
 #Normalized expression levels. 
 plotDensity(exprs(my.rma))
 
-my.mas5 <- mas5(my.affy)
-plotDensity(exprs(my.mas5))
 
+my.mas5 <- mas5(my.affy)
+#This is not running
+plotDensity(exprs(my.mas5))
+#This is also not running
 my.calls <-mas5calls(my.affy)
 head(exprs(my.calls))
-
-
 
 BiocManager::install('xps')
 
 library('limma')
+#Manual creation of levels, could be faster with another approach. 
 my.affy$sample.levels <- c(rep("non",5),"tnbc",rep("non",3),"tnbc","non","tnbc",rep("non",2),"tnbc",rep("non",3),"tnbc")
 pData(my.rma)$sample.levels <- c(rep("non",5),"tnbc",rep("non",3),"tnbc","non","tnbc",rep("non",2),"tnbc",rep("non",3),"tnbc")
 
@@ -124,12 +149,13 @@ plotMDS(exprs(my.rma), labels=pData(my.rma)$sample.levels, top=500, gene.selecti
 
 ##make sample.levels a factor
 pData(my.rma)$sample.levels <- as.factor(pData(my.rma)$sample.levels)
-levels(pData(my.rma)$sample.levels)
-  plotDensity(exprs(my.rma))
+plotDensity(exprs(my.rma))
 ##Load limma to get plotDensities function. Load RColorBrewer to provide good
 ##color palettes.
 library(limma)
 library(RColorBrewer)
+library(pheatmap)
+
 display.brewer.all()
 level.pal <- brewer.pal(6, "Dark2")
 level.cols <- level.pal[unname(pData(my.rma)$sample.levels)]
@@ -145,27 +171,26 @@ my.calls <- mas5calls(my.affy)
 plotMDS(exprs(my.rma), labels=pData(my.rma)$sample.levels, top=500, gene.selection="common", main="MDS Plot to Compare Replicates")
 
 
+
+#The next step in the analysis is to describe the experiment 
+#and analysis for limma in the form of a matrix. T
 my.design <- model.matrix(~0 + sample.levels, pData(my.rma))
 my.design
 rownames(my.design) <- pData(my.rma)$sample.labels
 my.design
 colnames(my.design) <- levels(pData(my.rma)$sample.levels)
 my.design
+
 ##determine the average effect (coefficient) for each treatment
 my.fit <- lmFit(my.rma, my.design)
 write.table(my.fit$coefficients, file=paste0("results/",my.gse,"_Limma_Coeff.txt"), sep="\t", quote=F)
+my.fit
 
-rownames(my.design) <- pData(my.rma)$sample.labels
-my.design
-colnames(my.design) <- levels(pData(my.rma)$sample.levels)
-my.design
-makeContrasts()
+##specify the contrast of interest using the levels from the design matrix
+my.contrasts <- makeContrasts(non - tnbc, levels=my.design)
+contrast.fits <- sapply(colnames(my.contrasts), function(x)(contrasts.fit(my.fit, contrasts=my.contrasts[, x])))
+length(contrast.fits)
 ##determine the average effect (coefficient) for each treatment
-my.fit <- lmFit(my.rma, my.design)
-
-
-
-
 
 ph = my.affy@phenoData
 colnames(ph@data)[2]="source"
@@ -193,4 +218,5 @@ topTable(fit)
 library (hgu133plus2.db)
 columns(hgu133plus2.db)
 hgu133plus2.db
+
 ["ENTREZID", "GENENAME", "SYMBOL"]
