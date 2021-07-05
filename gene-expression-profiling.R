@@ -43,18 +43,30 @@ head(exprs(my.geo.gse))
 summary(exprs(my.geo.gse))
 
 
+
+#Trying log2 normalization
+gse <- my.geo.gse
+
 #Some exploratory data analysis 
 library(dplyr)
-sampleInfo <- pData(my.geo.gse)
-sampleInfo <- select(sampleInfo, source_name_ch1,"disease state:ch1")
-sampleInfo <- rename(sampleInfo,sample = source_name_ch1, "state"="disease state:ch1")
+sampleInfo <- pData(gse)
+sampleInfo <- dplyr::select(sampleInfo, "description","disease state:ch1")
+sampleInfo <- dplyr::rename(sampleInfo,sample = "description", "state"="disease state:ch1")
 library(pheatmap)
-corMatrix <- cor(exprs(my.geo.gse),use="c")
+corMatrix <- cor(exprs(gse),use="c")
 pheatmap(corMatrix)  
 rownames(sampleInfo)
 # rownames(sampleInfo) <- colnames(corMatrix)
-pheatmap(corMatrix,annotation_col=sampleInfo)  
 
+#Correlation Matrix
+pheatmap(corMatrix,annotation_col=sampleInfo)  
+exprs(gse) <- log2(exprs(gse))
+boxplot(exprs(gse),outline=FALSE)
+library(ggplot2)
+library(ggrepel)
+pca <- prcomp(t(exprs(gse)))
+cbind(sampleInfo, pca$x) %>% 
+ggplot(aes(x = PC1, y=PC2, col=sample,label=paste("description", description))) + geom_point() + geom_text_repel()
 
 #The function getGEOSuppFiles() downloads the raw data files to your computer. 
 if(!file.exists(paste0("./geo_downloads/",my.gse))){
@@ -130,19 +142,26 @@ plotDensity(exprs(my.rma))
 
 
 my.mas5 <- mas5(my.affy)
+
 #This is not running
 plotDensity(exprs(my.mas5))
 #This is also not running
-my.calls <-mas5calls(my.affy)
+
+my.calls <-mas5calls.AffyBatch(my.rma)
 head(exprs(my.calls))
 
-BiocManager::install('xps')
+
+
+# my.rma<-my.rma[,c(1:5,6,10,12,15,19)]
+my.rma
 
 library('limma')
 #Manual creation of levels, could be faster with another approach. 
 my.affy$sample.levels <- c(rep("non",5),"tnbc",rep("non",3),"tnbc","non","tnbc",rep("non",2),"tnbc",rep("non",3),"tnbc")
+
 pData(my.rma)$sample.levels <- c(rep("non",5),"tnbc",rep("non",3),"tnbc","non","tnbc",rep("non",2),"tnbc",rep("non",3),"tnbc")
 
+pData(my.rma)
 table(pData(my.affy)$description, pData(my.affy)$sample.levels)
 
 plotMDS(exprs(my.rma), labels=pData(my.rma)$sample.levels, top=500, gene.selection="common", main="MDS Plot to Compare Replicates")
@@ -161,10 +180,12 @@ level.pal <- brewer.pal(6, "Dark2")
 level.cols <- level.pal[unname(pData(my.rma)$sample.levels)]
 level.cols
 
-plotDensities(exprs(my.rma), legend=F, col=level.cols, main="Arrays Not Normalized")
+plotDensities(exprs(my.affy), legend=F, col=level.cols, main="Arrays Not Normalized")
+plotDensities(exprs(my.rma), legend=F, col=level.cols, main="Arrays Normalized")
 legend("topright", legend=levels(pData(my.rma)$sample.levels), fill=level.pal)
 
-boxplot(exprs(my.rma), las=2, names=pData(my.rma)$sample.labels, outline=F, col=level.cols, main="Arrays Not Normalized")
+boxplot(exprs(my.affy), las=2, names=pData(my.affy)$sample.labels, outline=F, col=level.cols, main="Arrays Not Normalized")
+boxplot(exprs(my.rma), las=2, names=pData(my.rma)$sample.labels, outline=F, col=level.cols, main="Arrays  Normalized")
 
 #Problem. 
 my.calls <- mas5calls(my.affy)
@@ -174,10 +195,10 @@ plotMDS(exprs(my.rma), labels=pData(my.rma)$sample.levels, top=500, gene.selecti
 
 #The next step in the analysis is to describe the experiment 
 #and analysis for limma in the form of a matrix. T
-my.design <- model.matrix(~0 + sample.levels, pData(my.rma))
+my.design <- model.matrix(~0 + pData(my.rma)$sample.levels, pData(my.rma))
 my.design
-rownames(my.design) <- pData(my.rma)$sample.labels
-my.design
+
+#rownames(my.design) <- pData(my.rma)$sample.labels
 colnames(my.design) <- levels(pData(my.rma)$sample.levels)
 my.design
 
@@ -187,36 +208,24 @@ write.table(my.fit$coefficients, file=paste0("results/",my.gse,"_Limma_Coeff.txt
 my.fit
 
 ##specify the contrast of interest using the levels from the design matrix
-my.contrasts <- makeContrasts(non - tnbc, levels=my.design)
-contrast.fits <- sapply(colnames(my.contrasts), function(x)(contrasts.fit(my.fit, contrasts=my.contrasts[, x])))
+my.contrasts <- makeContrasts(non - tnbc, tnbc - non, levels=my.design)
+#contrast.fits <- sapply(colnames(my.contrasts), function(x)(contrasts.fit(my.fit, contrasts=my.contrasts[, x])))
 length(contrast.fits)
-##determine the average effect (coefficient) for each treatment
-
-ph = my.affy@phenoData
-colnames(ph@data)[2]="source"
-
-groups = ph@data$source
-f = factor(groups,levels=c("non","tnbc"))
-design = model.matrix(~ 0 + f)
-f
-design
-colnames(design) = c("non","tnbc")
-data.matrix = exprs(my.rma)
-data.fit = lmFit(data.matrix,design)
 
 
-ourData <- my.rma[,my.rma$disease.state.ch1 %in% c("non-triple negative breat cancer tumor","triple negative breat cancer tumor" )]
-ourData$cancerType <-  factor (ourData$disease.state.ch1)
-#Linear Model
-design <- model.matrix(~ ourData$cancerType)
-fit <- lmFit(ourData, design)
-fit <- eBayes(fit)
-topTable(fit)
-
-
-
+fit2 <- contrasts.fit(my.fit, my.contrasts)
+fit2 <- eBayes(fit2)
+topGenes <-topTable(fit2,adjust="BH", number=length(fit2$coefficients), sort.by="none")
+my.tests <- decideTests(fit2,method="separate", adjust.method="BH", p.value=0.05, lfc=0)
+table(my.tests)
+summary(my.tests)
+anno <- fData(my.rma)
+anno
+#The top genes with a p-value of less than 0.05
+topGenes[topGenes$adj.P.Val<0.05,]
 library (hgu133plus2.db)
 columns(hgu133plus2.db)
-hgu133plus2.db
-
-["ENTREZID", "GENENAME", "SYMBOL"]
+keytypes(hgu133plus2.db)
+gene.data <- select(hgu133plus2.db, keys=rownames(topGenes, keytype="PROBEID", columns=c("ENTREZID", "GENENAME", "SYMBOL")))
+library(hugene10stv1 )
+                    
