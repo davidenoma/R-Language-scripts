@@ -48,7 +48,7 @@ binded[,1] = as.double(binded[,1])
 filter_bind = binded [ as.double (binded[,1]) < 0.05]
 
 diff_genes = filter_bind[224:length(filter_bind)]
-sum(top_bh < 0.05)
+sum(top_bh < 0.05)snp
 # 
 # library(goseq)
 # library(DESeq2)
