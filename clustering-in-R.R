@@ -19,4 +19,4 @@ scotCluster <- hclust(dist(scot))
 avg_dend_obj <- as.dendrogram(scotCluster)
 avg_col_dend <- color_branches(avg_dend_obj)
 plot(avg_col_dend, main ="SCOT Markers")
-
+circlize_dendrogram(avg_col_dend)
