@@ -17,8 +17,11 @@ unique_chroms = unique(gen_cord$V1)
     }
     
   }
-coords <- apply(gen_cord, 1, paste, collapse = ":")
 
+coords = gen_cord[,1:3]
+colnames(coords) <- colnames(SNP_M)
+coords <- apply(gen_cord, 1, paste, collapse = ":")
+head(coords)
 final_cord <- getBM(attributes = c('refsnp_id', 'chr_name', 'chrom_start', 'chrom_end', 'allele'),
       filters = c('chromosomal_region'), 
       values = coords[1:500],
@@ -26,6 +29,20 @@ final_cord <- getBM(attributes = c('refsnp_id', 'chr_name', 'chrom_start', 'chro
       mart = snpMart) 
 
 #Reading in sumstats
-sum_stats_gemma = read.csv("C:/Users/HP/OneDrive/Desktop/david_sum_stats_gemma.assoc.txt")
+sum_stats_gemma = read.csv("C:/Users/HP/OneDrive/Desktop/david_sum_stats_gemma.assoc.txt",sep="\t")
 
-sum_stats_filter_p_values = sum_stats_gemma[sum_stats_gemma$p_wald < 0.05,]
+sum_stats_filter_p_values = sum_stats_gemma[sum_stats_gemma$p_wald < 0.001,]
+
+#sorted_sum_stats = sort(sum_stats_filter_p_values$p_wald)
+
+final_sum_stat_input = sum_stats_filter_p_values[,c(1,3)]
+final_sum_stat_input$end = final_sum_stat_input$ps + 1
+
+colnames(final_sum_stat_input) = colnames(SNP_M)
+final_sum_stat_input_coord <- apply(final_sum_stat_input, 1, paste, collapse = ":")
+
+final_cord_sum_stat <- getBM(attributes = c('refsnp_id', 'chr_name', 'chrom_start', 'chrom_end', 'allele'),
+                    filters = c('chromosomal_region'), 
+                    values = final_sum_stat_input_coord[1:50],
+                    verbose = TRUE,
+                    mart = snpMart) 
